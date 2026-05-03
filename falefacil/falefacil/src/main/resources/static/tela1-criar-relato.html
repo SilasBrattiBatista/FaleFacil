@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fale Fácil — Novo relato</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #f4f4f4; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
+    .container { width: 100%; max-width: 640px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .topbar-title { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+    .topbar-brand { font-size: 13px; color: #888; }
+    .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 1.5rem; }
+    .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #888; margin: 1.25rem 0 0.75rem; }
+    .field-group { margin-bottom: 1rem; }
+    label { font-size: 13px; color: #555; margin-bottom: 5px; display: block; }
+    .required { color: #e24b4a; margin-left: 2px; }
+    input[type=text], select, textarea {
+      width: 100%; font-size: 14px; padding: 9px 12px;
+      border: 1px solid #ddd; border-radius: 8px;
+      background: #fafafa; color: #1a1a1a;
+      outline: none; font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    input[type=text]:focus, select:focus, textarea:focus { border-color: #378ADD; background: #fff; }
+    textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .toggle-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; background: #f4f4f4;
+      border-radius: 8px; margin-bottom: 1rem; cursor: pointer;
+    }
+    .toggle {
+      width: 38px; height: 22px; background: #ccc;
+      border-radius: 11px; position: relative;
+      transition: background 0.2s; flex-shrink: 0;
+    }
+    .toggle.on { background: #378ADD; }
+    .toggle::after {
+      content: ''; position: absolute;
+      width: 16px; height: 16px; background: #fff;
+      border-radius: 50%; top: 3px; left: 3px;
+      transition: left 0.2s;
+    }
+    .toggle.on::after { left: 19px; }
+    .toggle-label { font-size: 13px; color: #555; }
+    .upload-box {
+      border: 1px dashed #ccc; border-radius: 8px;
+      padding: 20px; text-align: center;
+      color: #888; font-size: 13px; cursor: pointer;
+      background: #fafafa; margin-bottom: 1rem;
+      transition: border-color 0.15s;
+    }
+    .upload-box:hover { border-color: #378ADD; }
+    .protocol-hint { font-size: 11px; color: #aaa; margin-top: 4px; }
+    .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1.25rem; }
+    .btn {
+      padding: 9px 22px; border-radius: 8px; font-size: 14px;
+      cursor: pointer; border: 1px solid #ddd;
+      background: transparent; color: #333; font-family: inherit;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #f0f0f0; }
+    .btn-primary { background: #185FA5; color: #fff; border-color: transparent; font-weight: 500; }
+    .btn-primary:hover { background: #0e4a82; }
+    .divider { border: none; border-top: 1px solid #eee; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <span class="topbar-title">Novo relato</span>
+      <span class="topbar-brand">Fale Fácil</span>
+    </div>
+
+    <div class="card">
+      <div class="section-label">Identificação</div>
+
+      <div class="toggle-row" onclick="toggleAnon()">
+        <div class="toggle" id="anonToggle"></div>
+        <span class="toggle-label" id="anonLabel">Enviar de forma anônima</span>
+      </div>
+
+      <div id="nomeField" class="field-group">
+        <label>Seu nome</label>
+        <input type="text" placeholder="Nome completo" />
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-label">Detalhes do relato</div>
+
+      <div class="field-group">
+        <label>Título <span class="required">*</span></label>
+        <input type="text" placeholder="Descreva brevemente o problema" />
+      </div>
+
+      <div class="row2">
+        <div class="field-group">
+          <label>Categoria <span class="required">*</span></label>
+          <select>
+            <option value="">Selecione...</option>
+            <option>Segurança</option>
+            <option>Manutenção</option>
+            <option>Qualidade</option>
+            <option>RH</option>
+            <option>Outros</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Local / setor <span class="required">*</span></label>
+          <input type="text" placeholder="Ex: Bloco B, linha 3" />
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Descrição detalhada <span class="required">*</span></label>
+        <textarea placeholder="Descreva o problema com o máximo de detalhes possível..."></textarea>
+      </div>
+
+      <div class="upload-box">
+        📎 Anexar foto ou arquivo (opcional)
+      </div>
+
+      <p class="protocol-hint">Um número de protocolo será gerado automaticamente após o envio.</p>
+
+      <div class="actions">
+        <button class="btn">Cancelar</button>
+        <button class="btn btn-primary">Enviar relato</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleAnon() {
+      const toggle = document.getElementById('anonToggle');
+      const label = document.getElementById('anonLabel');
+      const nomeField = document.getElementById('nomeField');
+      toggle.classList.toggle('on');
+      if (toggle.classList.contains('on')) {
+        label.textContent = 'Enviando anonimamente';
+        nomeField.style.display = 'none';
+      } else {
+        label.textContent = 'Enviar de forma anônima';
+        nomeField.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>

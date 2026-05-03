@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fale Fácil — Gerenciar chamado</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #f4f4f4; min-height: 100vh; padding: 2rem 1rem; }
+    .container { width: 100%; max-width: 640px; margin: 0 auto; }
+    .back {
+      font-size: 13px; color: #555; cursor: pointer;
+      margin-bottom: 1.25rem; display: inline-flex;
+      align-items: center; gap: 4px; text-decoration: none;
+    }
+    .back:hover { color: #185FA5; }
+    .card {
+      background: #fff; border: 1px solid #e5e5e5;
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;
+    }
+    .proto-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .proto { font-size: 12px; font-family: monospace; color: #888; }
+    .badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+    .b-aberto { background: #E6F1FB; color: #0C447C; }
+    .b-analise { background: #FAEEDA; color: #633806; }
+    .b-resolucao { background: #EEEDFE; color: #3C3489; }
+    .b-finalizado { background: #EAF3DE; color: #27500A; }
+    .chamado-title { font-size: 16px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+    .chamado-meta { font-size: 12px; color: #888; margin-bottom: 12px; }
+    .divider { border: none; border-top: 1px solid #eee; margin: 1rem 0; }
+    .field-label { font-size: 12px; color: #888; margin-bottom: 6px; }
+    .desc-box {
+      background: #fafafa; border-radius: 8px;
+      padding: 12px; font-size: 13px; color: #555;
+      line-height: 1.6; border: 1px solid #eee;
+    }
+    .attach-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; padding: 4px 10px;
+      background: #f4f4f4; border: 1px solid #ddd;
+      border-radius: 20px; color: #555; margin-top: 10px;
+    }
+    .section-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.07em;
+      text-transform: uppercase; color: #888;
+      margin: 1.25rem 0 0.75rem;
+    }
+    .section-label:first-child { margin-top: 0; }
+    .status-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .status-opt {
+      font-size: 13px; padding: 6px 16px; border-radius: 20px;
+      cursor: pointer; border: 1px solid #ddd;
+      background: transparent; color: #666;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .status-opt:hover { border-color: #aaa; }
+    .status-opt.sel-aberto { background: #E6F1FB; color: #0C447C; border-color: transparent; }
+    .status-opt.sel-analise { background: #FAEEDA; color: #633806; border-color: transparent; }
+    .status-opt.sel-resolucao { background: #EEEDFE; color: #3C3489; border-color: transparent; }
+    .status-opt.sel-finalizado { background: #EAF3DE; color: #27500A; border-color: transparent; }
+    textarea {
+      width: 100%; font-size: 13px; padding: 10px 12px;
+      border: 1px solid #ddd; border-radius: 8px;
+      background: #fafafa; color: #1a1a1a;
+      outline: none; font-family: inherit;
+      resize: vertical; min-height: 110px; line-height: 1.6;
+      transition: border-color 0.15s;
+    }
+    textarea:focus { border-color: #378ADD; background: #fff; }
+    .warn {
+      background: #FAEEDA; border-radius: 8px;
+      padding: 9px 14px; font-size: 12px;
+      color: #633806; margin-bottom: 10px;
+    }
+    .actions { display: flex; justify-content: flex-end; gap: 8px; }
+    .btn {
+      padding: 9px 22px; border-radius: 8px; font-size: 14px;
+      cursor: pointer; border: 1px solid #ddd;
+      background: transparent; color: #333;
+      font-family: inherit; transition: background 0.15s;
+    }
+    .btn:hover { background: #f0f0f0; }
+    .btn-primary { background: #185FA5; color: #fff; border-color: transparent; font-weight: 500; }
+    .btn-primary:hover { background: #0e4a82; }
+    .btn-danger { background: #FCEBEB; color: #A32D2D; border-color: transparent; }
+    .btn-danger:hover { background: #f5c1c1; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="tela2-lista-relatos.html">← Voltar para lista</a>
+
+    <div class="card">
+      <div class="proto-row">
+        <span class="proto">Protocolo #0023</span>
+        <span class="badge b-analise" id="badgeAtual">Em análise</span>
+      </div>
+      <div class="chamado-title">Lâmpada queimada no corredor do 2º andar</div>
+      <div class="chamado-meta">Manutenção · Bloco A, 2º andar · 25 abr 2026 · Anônimo</div>
+      <div class="divider"></div>
+      <div class="field-label">Descrição</div>
+      <div class="desc-box">
+        A lâmpada do corredor principal do 2º andar está queimada há aproximadamente 3 dias.
+        À noite fica completamente escuro nesse trecho, o que representa risco de acidente
+        para os colaboradores do turno noturno.
+      </div>
+      <div>
+        <span class="attach-pill">📎 foto_corredor.jpg</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-label">Atualizar status</div>
+      <div class="status-row">
+        <button class="status-opt" onclick="selStatus(this, 'sel-aberto', 'Aberto')">Aberto</button>
+        <button class="status-opt sel-analise" onclick="selStatus(this, 'sel-analise', 'Em análise')">Em análise</button>
+        <button class="status-opt" onclick="selStatus(this, 'sel-resolucao', 'Em resolução')">Em resolução</button>
+        <button class="status-opt" onclick="selStatus(this, 'sel-finalizado', 'Finalizado')">Finalizado</button>
+      </div>
+
+      <div class="section-label">Resposta / resolução</div>
+      <div class="warn" id="warnMsg" style="display:none;">
+        Preencha a resposta antes de marcar como finalizado.
+      </div>
+      <textarea id="resposta" placeholder="Descreva a ação tomada ou a resolução do problema..."></textarea>
+
+      <div class="divider"></div>
+      <div class="actions">
+        <button class="btn btn-danger">Excluir chamado</button>
+        <button class="btn" onclick="window.location.href='tela2-lista-relatos.html'">Cancelar</button>
+        <button class="btn btn-primary" onclick="salvar()">Salvar alterações</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let statusSelecionado = 'sel-analise';
+
+    function selStatus(el, cls, label) {
+      document.querySelectorAll('.status-opt').forEach(b => {
+        b.className = 'status-opt';
+      });
+      el.classList.add(cls);
+      statusSelecionado = cls;
+
+      const warn = document.getElementById('warnMsg');
+      warn.style.display = cls === 'sel-finalizado' ? 'block' : 'none';
+
+      const badgeMap = {
+        'sel-aberto': { text: 'Aberto', cls: 'b-aberto' },
+        'sel-analise': { text: 'Em análise', cls: 'b-analise' },
+        'sel-resolucao': { text: 'Em resolução', cls: 'b-resolucao' },
+        'sel-finalizado': { text: 'Finalizado', cls: 'b-finalizado' },
+      };
+      const badge = document.getElementById('badgeAtual');
+      badge.textContent = badgeMap[cls].text;
+      badge.className = 'badge ' + badgeMap[cls].cls;
+    }
+
+    function salvar() {
+      const resposta = document.getElementById('resposta').value.trim();
+      if (statusSelecionado === 'sel-finalizado' && !resposta) {
+        alert('Por favor, preencha a resposta antes de finalizar o chamado.');
+        return;
+      }
+      alert('Alterações salvas com sucesso!');
+      window.location.href = 'tela2-lista-relatos.html';
+    }
+  </script>
+</body>
+</html>

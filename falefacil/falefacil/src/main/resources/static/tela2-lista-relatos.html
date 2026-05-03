@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fale Fácil — Chamados</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #f4f4f4; min-height: 100vh; padding: 2rem 1rem; }
+    .container { width: 100%; max-width: 800px; margin: 0 auto; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .topbar-title { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+    .btn-new {
+      padding: 8px 18px; border-radius: 8px; font-size: 13px;
+      cursor: pointer; background: #185FA5; color: #fff;
+      border: none; font-weight: 500; font-family: inherit;
+      transition: background 0.15s;
+    }
+    .btn-new:hover { background: #0e4a82; }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 1.25rem; }
+    .metric {
+      background: #fff; border: 1px solid #e5e5e5;
+      border-radius: 10px; padding: 12px 16px;
+    }
+    .metric-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+    .metric-value { font-size: 22px; font-weight: 600; color: #1a1a1a; }
+    .metric-value.blue { color: #185FA5; }
+    .metric-value.amber { color: #854F0B; }
+    .metric-value.green { color: #3B6D11; }
+    .search-row { margin-bottom: 1rem; }
+    .search-row input {
+      width: 100%; font-size: 14px; padding: 9px 14px;
+      border: 1px solid #ddd; border-radius: 8px;
+      background: #fff; color: #1a1a1a;
+      outline: none; font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    .search-row input:focus { border-color: #378ADD; }
+    .filters { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
+    .chip {
+      font-size: 12px; padding: 5px 14px; border-radius: 20px;
+      cursor: pointer; border: 1px solid #ddd;
+      background: transparent; color: #666; font-family: inherit;
+      transition: all 0.15s;
+    }
+    .chip.active { background: #fff; color: #1a1a1a; border-color: #aaa; font-weight: 500; }
+    .row {
+      background: #fff; border: 1px solid #e5e5e5;
+      border-radius: 10px; padding: 12px 16px;
+      margin-bottom: 8px; display: flex;
+      align-items: center; gap: 12px;
+      transition: border-color 0.15s;
+    }
+    .row:hover { border-color: #aaa; }
+    .proto { font-size: 11px; color: #aaa; min-width: 56px; font-family: monospace; }
+    .info { flex: 1; min-width: 0; }
+    .row-title { font-size: 14px; font-weight: 500; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .row-meta { font-size: 12px; color: #888; margin-top: 2px; }
+    .badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; white-space: nowrap; font-weight: 500; }
+    .b-aberto { background: #E6F1FB; color: #0C447C; }
+    .b-analise { background: #FAEEDA; color: #633806; }
+    .b-resolucao { background: #EEEDFE; color: #3C3489; }
+    .b-finalizado { background: #EAF3DE; color: #27500A; }
+    .btn-ger {
+      font-size: 12px; padding: 5px 14px; border-radius: 8px;
+      cursor: pointer; border: 1px solid #ddd;
+      background: transparent; color: #555;
+      white-space: nowrap; font-family: inherit;
+      transition: background 0.15s;
+    }
+    .btn-ger:hover { background: #f0f0f0; }
+    .pagination { text-align: center; margin-top: 1rem; font-size: 12px; color: #888; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <span class="topbar-title">Chamados</span>
+      <button class="btn-new" onclick="window.location.href='tela1-criar-relato.html'">+ Novo relato</button>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Total</div>
+        <div class="metric-value">24</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Abertos</div>
+        <div class="metric-value blue">9</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Em andamento</div>
+        <div class="metric-value amber">11</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Finalizados</div>
+        <div class="metric-value green">4</div>
+      </div>
+    </div>
+
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="Buscar por título ou protocolo..." oninput="filtrar()" />
+    </div>
+
+    <div class="filters" id="filterBtns">
+      <button class="chip active" onclick="setFiltro('todos', this)">Todos</button>
+      <button class="chip" onclick="setFiltro('aberto', this)">Aberto</button>
+      <button class="chip" onclick="setFiltro('analise', this)">Em análise</button>
+      <button class="chip" onclick="setFiltro('resolucao', this)">Em resolução</button>
+      <button class="chip" onclick="setFiltro('finalizado', this)">Finalizado</button>
+    </div>
+
+    <div id="listaRelatos"></div>
+    <div class="pagination" id="paginacao"></div>
+  </div>
+
+  <script>
+      const badgeMap = {
+      'A fazer': '<span class="badge b-aberto">Aberto</span>',
+      'Em análise': '<span class="badge b-analise">Em análise</span>',
+      'Em resolução': '<span class="badge b-resolucao">Em resolução</span>',
+      'Finalizado': '<span class="badge b-finalizado">Finalizado</span>',
+    };
+
+    let todosRelatos = [];
+    let filtroAtivo = 'todos';
+
+    async function carregarChamados() {
+      try {
+        const response = await fetch('http://localhost:8080/chamados');
+        const data = await response.json();
+        todosRelatos = data;
+        filtrar();
+        atualizarMetricas();
+      } catch (error) {
+        console.error('Erro ao carregar chamados:', error);
+      }
+    }
+
+    function atualizarMetricas() {
+      const total = todosRelatos.length;
+      const abertos = todosRelatos.filter(r => r.status === 'A fazer').length;
+      const andamento = todosRelatos.filter(r => r.status === 'Em análise' || r.status === 'Em resolução').length;
+      const finalizados = todosRelatos.filter(r => r.status === 'Finalizado').length;
+
+      document.querySelector('.metric-value:nth-child(1)').textContent = total;
+      document.querySelectorAll('.metric-value')[0].textContent = total;
+      document.querySelectorAll('.metric-value')[1].textContent = abertos;
+      document.querySelectorAll('.metric-value')[2].textContent = andamento;
+      document.querySelectorAll('.metric-value')[3].textContent = finalizados;
+    }
+
+    function setFiltro(filtro, btn) {
+      filtroAtivo = filtro;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      filtrar();
+    }
+
+    function filtrar() {
+      const busca = document.getElementById('searchInput').value.toLowerCase();
+      const lista = document.getElementById('listaRelatos');
+
+      const filtrados = todosRelatos.filter(r => {
+        const matchFiltro = filtroAtivo === 'todos' || r.status === filtroAtivo;
+        const matchBusca = r.descricao.toLowerCase().includes(busca) || String(r.id).includes(busca);
+        return matchFiltro && matchBusca;
+      });
+
+      if (filtrados.length === 0) {
+        lista.innerHTML = '<p style="text-align:center;color:#aaa;padding:2rem 0;font-size:14px;">Nenhum chamado encontrado.</p>';
+        document.getElementById('paginacao').textContent = '';
+        return;
+      }
+
+      lista.innerHTML = filtrados.map(r => `
+        <div class="row">
+          <span class="proto">#${String(r.id).padStart(4, '0')}</span>
+          <div class="info">
+            <div class="row-title">${r.descricao}</div>
+            <div class="row-meta">${r.data}</div>
+          </div>
+          ${badgeMap[r.status] || '<span class="badge">' + r.status + '</span>'}
+          <button class="btn-ger" onclick="window.location.href='tela3-gerenciar-chamado.html?id=${r.id}'">
+            ${r.status === 'Finalizado' ? 'Ver' : 'Gerenciar'}
+          </button>
+        </div>
+      `).join('');
+
+      document.getElementById('paginacao').textContent = `Exibindo ${filtrados.length} de ${todosRelatos.length} chamados`;
+    }
+
+    carregarChamados();
+  </script>
+</body>
+</html>
